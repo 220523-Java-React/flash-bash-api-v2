@@ -13,8 +13,12 @@ public class Flashcard {
     private String answer;
 
     // what relationship does User have with Flashcard? -> User (One) to Flashcard (Many)
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private User creator;
+
+
+
+
 
     public Integer getFlashcardId() {
         return flashcardId;
