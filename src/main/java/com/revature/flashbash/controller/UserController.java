@@ -2,6 +2,7 @@ package com.revature.flashbash.controller;
 
 import com.revature.flashbash.model.User;
 import com.revature.flashbash.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,24 +19,38 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping // this already inherits /users -> GET /users
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
-    }
-
-    // TODO: Implement a Get User By Id
-
-
-    @GetMapping("/username/{username}")
-    public User getUserByUsername(@PathVariable String username){
-        return userService.getUserByUsername(username);
-    }
 
     @PostMapping //                            -> POST /users
     public User createUser(@RequestBody User user){
         return userService.createUser(user);
     }
 
+    @GetMapping // this already inherits /users -> GET /users
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("{userId}")
+    public User getUserById(@PathVariable Integer userId){
+        return userService.getUserById(userId);
+    }
+
+    @GetMapping("/username/{username}")
+    public User getUserByUsername(@PathVariable String username){
+        return userService.getUserByUsername(username);
+    }
+
+    @PatchMapping
+    public User updateUser(@RequestBody User user){
+        return userService.updateUser(user);
+    }
+
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteUserById(@PathVariable Integer userId){
+        userService.deleteUserById(userId);
+    }
 
 
 }
+
