@@ -26,4 +26,8 @@ public class Flashcard {
     // what relationship does User have with Flashcard? -> User (One) to Flashcard (Many)
     @ManyToOne
     private User creator;
+
+    public enum Topic {
+        JAVA, SQL, HTML, CSS, JAVASCRIPT, SPRING, DEVOPS
+    }
 }

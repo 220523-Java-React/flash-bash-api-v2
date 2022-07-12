@@ -24,4 +24,8 @@ public class User { // the default entity name would have been user
 
     @Enumerated
     private UserType userType;
+
+    public enum UserType {
+        USER, ADMIN
+    }
 }

@@ -2,7 +2,6 @@ package com.revature.flashbash.service;
 
 import com.revature.flashbash.exception.ResourceNotFoundException;
 import com.revature.flashbash.model.Flashcard;
-import com.revature.flashbash.model.Topic;
 import com.revature.flashbash.repository.FlashcardRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,7 @@ public class FlashcardService {
         return flashcardRepository.findAllByCreator_Username(username);
     }
 
-    public List<Flashcard> getAllFlashcardsByTopic(Topic topic){
+    public List<Flashcard> getAllFlashcardsByTopic(Flashcard.Topic topic){
         return flashcardRepository.findAllByTopic(topic);
     }
 
