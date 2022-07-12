@@ -1,13 +1,14 @@
 package com.revature.flashbash.controller;
 
 import com.revature.flashbash.model.Flashcard;
-import com.revature.flashbash.model.Topic;
+import com.revature.flashbash.model.Flashcard.Topic;
+
 import com.revature.flashbash.service.FlashcardService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Locale;
+
 
 @RestController
 @RequestMapping("/flashcards")
