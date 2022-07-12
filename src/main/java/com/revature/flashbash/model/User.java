@@ -1,6 +1,8 @@
 package com.revature.flashbash.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +15,10 @@ import java.util.Collections;
 @Entity(name = "users")
 @Getter
 @Setter
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties({"authorities", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "password"})
 public class User implements UserDetails { // the default entity name would have been user
 
     @Id
@@ -26,16 +31,22 @@ public class User implements UserDetails { // the default entity name would have
     private String password;
 
     private String firstName;
+
     private String lastName;
 
     @CreationTimestamp
     private Timestamp registrationTime;
+    @CreationTimestamp
+    private Timestamp lastUpdated;
 
+    private Timestamp lastLoggedIn;
+
+    @ColumnDefault("true")
     private boolean isActive = true;
 
-
     @Enumerated
-    private Authority authority;
+    @ColumnDefault("0")
+    private Authority authority = Authority.USER;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

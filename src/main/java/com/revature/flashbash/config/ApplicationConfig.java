@@ -1,5 +1,6 @@
 package com.revature.flashbash.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.flashbash.service.UserService;
 import com.revature.flashbash.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
@@ -52,5 +53,10 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper(){
+        return new ObjectMapper();
     }
 }

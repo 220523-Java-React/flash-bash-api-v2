@@ -1,6 +1,7 @@
 package com.revature.flashbash.controller;
 
 import com.revature.flashbash.model.User;
+import com.revature.flashbash.security.RegistrationRequest;
 import com.revature.flashbash.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ public class UserController {
 
 
     @PostMapping() //                            -> POST /users
-    public User createUser(@RequestBody User user){
-        return userService.createUser(user);
+    public User createUser(@RequestBody RegistrationRequest registrationRequest){
+        return userService.createUser(registrationRequest);
     }
 
     @GetMapping // this already inherits /users -> GET /users
