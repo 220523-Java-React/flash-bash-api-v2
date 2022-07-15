@@ -148,7 +148,7 @@ public class UserService implements UserDetailsService {
         // update the lastLoggedInValue on the user
         updateUser(User.builder().username(request.getUsername()).build());
 
-        return new AuthenticationResponse(jwtUtil.generateToken((User) loadUserByUsername(request.getUsername())));
+        return new AuthenticationResponse(jwtUtil.generateToken((User) loadUserByUsername(request.getUsername())), request.getUsername());
     }
 
     @Override
