@@ -3,10 +3,7 @@ package com.revature.flashbash.controller;
 import com.revature.flashbash.security.AuthenticationRequest;
 import com.revature.flashbash.security.AuthenticationResponse;
 import com.revature.flashbash.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/authenticate")
