@@ -78,12 +78,16 @@ public class UserService implements UserDetailsService {
     }
 
     private User findUser(User user){
-        User foundUser = null;
-        if(user.getUserId() != null)
-            foundUser = userRepository.findById(user.getUserId()).orElse(null);
+        Integer userId = user.getUserId();
+        String username = user.getUsername();
 
-        if(foundUser == null && user.getUserId() != null)
-            foundUser = userRepository.findByUsername(user.getUsername()).orElse(null);
+        User foundUser = null;
+
+        if(userId != null)
+            foundUser = userRepository.findById(userId).orElse(null);
+
+        if(foundUser == null && username != null)
+            foundUser = userRepository.findByUsername(username).orElse(null);
 
         if(foundUser == null){
             if(user.getUserId() != null)
