@@ -1,15 +1,18 @@
 package com.revature.flashbash.service;
 
+import com.revature.flashbash.exception.ResourceAlreadyExistsException;
 import com.revature.flashbash.exception.ResourceNotFoundException;
 import com.revature.flashbash.model.Flashcard;
-import com.revature.flashbash.model.Flashcard.Topic;
+import com.revature.flashbash.model.User;
 import com.revature.flashbash.repository.FlashcardRepository;
+import com.revature.flashbash.util.PaginationOptions;
+import com.revature.flashbash.util.SearchCriteria;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class FlashcardService {
+public class FlashcardService extends PaginationService<Flashcard.SortBy>{
 
     private final FlashcardRepository flashcardRepository;
 
@@ -17,39 +20,95 @@ public class FlashcardService {
         this.flashcardRepository = flashcardRepository;
     }
 
-    public Flashcard createFlashcard(Flashcard flashcard){
-        return flashcardRepository.save(flashcard);
-    }
+    public Page<Flashcard> getAllFlashcards(PaginationOptions paginationOptions, SearchCriteria searchCriteria){
 
-    public List<Flashcard> getAllFlashcards(){
-        return flashcardRepository.findAll();
+        PageRequest pageRequest = buildPageRequest(paginationOptions);
+
+        int creator = searchCriteria.get(User.class) != null ? 1 : 0;
+        int topic = searchCriteria.get(Flashcard.Topic.class) != null  ? 1 : 0;
+        int difficulty = searchCriteria.get(Flashcard.Difficulty.class) != null  ? 1 : 0;
+
+        String optionCode = String.format("%d%d%d", creator, topic, difficulty);
+
+        switch (optionCode){
+            case "000":
+                return flashcardRepository.findAll(pageRequest);
+            case "001":
+                return flashcardRepository.findAllByDifficultyLessThanEqual(
+                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class), pageRequest);
+            case "010":
+                return flashcardRepository.findAllByTopic(
+                        (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class), pageRequest);
+            case "011":
+                return flashcardRepository.findAllByDifficultyLessThanEqualAndTopic(
+                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class),
+                        (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class),
+                        pageRequest);
+            case "100":
+                return flashcardRepository.findAllByCreator_UserId(
+                        (Integer) searchCriteria.get(User.class), pageRequest);
+            case "101":
+                return flashcardRepository.findAllByCreator_UserIdAndDifficultyLessThanEqual(
+                        (Integer) searchCriteria.get(User.class),
+                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class),
+                        pageRequest);
+            case "110":
+                return flashcardRepository.findAllByCreator_UserIdAndTopic(
+                        (Integer) searchCriteria.get(User.class),
+                        (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class),
+                        pageRequest);
+            case "111":
+                return flashcardRepository.findAllByCreator_UserIdAndDifficultyLessThanEqualAndTopic(
+                        (Integer) searchCriteria.get(User.class),
+                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class),
+                        (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class),
+                        pageRequest);
+            default:
+                throw new IllegalStateException("Unexpected value: " + optionCode);
+        }
     }
 
     public Flashcard getFlashcardById(Integer flashcardId){
-        return flashcardRepository.findById(flashcardId).orElseThrow(() -> new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcardId));
+        return flashcardRepository.findById(flashcardId)
+                .orElseThrow(() -> new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcardId));
     }
 
-    public List<Flashcard> getAllFlashcardsByCreatorId(Integer creatorId){
-        return flashcardRepository.findAllByCreator_UserId(creatorId);
-    }
-
-    public List<Flashcard> getAllFlashcardsByCreatorUsername(String username){
-        return flashcardRepository.findAllByCreator_Username(username);
-    }
-
-    public List<Flashcard> getAllFlashcardsByTopic(Topic topic){
-        return flashcardRepository.findAllByTopic(topic);
-    }
-
-    public Flashcard updateFlashcard(Flashcard flashcard){
-        if(!flashcardRepository.existsById(flashcard.getFlashcardId())){
-            throw new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcard.getFlashcardId());
-        }
+    public Flashcard createFlashcard(Flashcard flashcard){
+        if(flashcard.getFlashcardId() != null && flashcardRepository.existsById(flashcard.getFlashcardId()))
+            throw new ResourceAlreadyExistsException(Flashcard.class, "flashcardId", flashcard.getFlashcardId());
 
         return flashcardRepository.save(flashcard);
     }
 
+    public Flashcard replaceFlashcard(Flashcard flashcard, Integer flashcardId){
+        if(!flashcardRepository.existsById(flashcardId))
+            throw new ResourceNotFoundException(Flashcard.class,"flashcardId", flashcardId);
+
+        flashcard.setFlashcardId(flashcardId);
+        return flashcardRepository.save(flashcard);
+    }
+
+    public Flashcard updateFlashcard(Flashcard flashcard, Integer flashcardId){
+        Flashcard dbFlashcard = flashcardRepository.findById(flashcardId)
+                .orElseThrow(() -> new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcard.getFlashcardId()));
+
+        if(flashcard.getQuestion() != null)
+            dbFlashcard.setQuestion(flashcard.getQuestion());
+
+        if(flashcard.getAnswer() != null)
+            dbFlashcard.setAnswer(flashcard.getAnswer());
+
+        if(flashcard.getTopic() != null)
+            dbFlashcard.setTopic(flashcard.getTopic());
+
+        if(flashcard.getDifficulty() != null)
+            dbFlashcard.setDifficulty(flashcard.getDifficulty());
+
+        return flashcardRepository.save(dbFlashcard);
+    }
+
     public void deleteFlashcardById(Integer flashcardId){
-        if(flashcardRepository.deleteByFlashcardId(flashcardId) == 0) throw new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcardId);
+        if(flashcardRepository.deleteByFlashcardId(flashcardId) == 0)
+            throw new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcardId);
     }
 }

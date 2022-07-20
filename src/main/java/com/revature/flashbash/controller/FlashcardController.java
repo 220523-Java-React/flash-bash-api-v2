@@ -1,13 +1,15 @@
 package com.revature.flashbash.controller;
 
 import com.revature.flashbash.model.Flashcard;
-import com.revature.flashbash.model.Flashcard.Topic;
-
+import com.revature.flashbash.model.Order;
+import com.revature.flashbash.model.User;
 import com.revature.flashbash.service.FlashcardService;
+import com.revature.flashbash.util.PaginationOptions;
+import com.revature.flashbash.util.SearchCriteria;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 
 @RestController
@@ -20,14 +22,25 @@ public class FlashcardController {
         this.flashcardService = flashcardService;
     }
 
-    @PostMapping
-    public Flashcard createNewFlashcard(@RequestBody Flashcard flashcard){
-        return flashcardService.createFlashcard(flashcard);
-    }
 
     @GetMapping
-    public List<Flashcard> getAllFlashcards(){
-        return flashcardService.getAllFlashcards();
+    public Page<Flashcard> getAllFlashcards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "ID") Flashcard.SortBy sort,
+            @RequestParam(defaultValue = "ASCENDING") Order order,
+            @RequestParam(required = false) Integer creator,
+            @RequestParam(required = false) Flashcard.Topic topic,
+            @RequestParam(required = false) Flashcard.Difficulty difficulty
+            ) {
+
+        return flashcardService.getAllFlashcards(
+                new PaginationOptions(page, size, sort, order),
+                new SearchCriteria(){{
+                    put(User.class, creator);
+                    put(Flashcard.Topic.class, topic);
+                    put(Flashcard.Difficulty.class, difficulty);
+                }});
     }
 
     @GetMapping("/{flashcardId}")
@@ -35,34 +48,39 @@ public class FlashcardController {
         return flashcardService.getFlashcardById(flashcardId);
     }
 
-    @GetMapping("/creator/{creatorId}")
-    public List<Flashcard> getAllFlashcardsByCreatorId(@PathVariable Integer creatorId){
-        return flashcardService.getAllFlashcardsByCreatorId(creatorId);
+    @PostMapping
+    public Flashcard createNewFlashcard(@RequestBody Flashcard flashcard){
+        return flashcardService.createFlashcard(flashcard);
     }
 
-    @GetMapping("/creator/username/{username}")
-    public List<Flashcard> getAllFlashcardsByCreatorUsername(@PathVariable String username){
-        return flashcardService.getAllFlashcardsByCreatorUsername(username);
+    @PutMapping("/{flashcardId}")
+    public Flashcard replaceFlashcard(@RequestBody Flashcard flashcard, @PathVariable Integer flashcardId){
+        return flashcardService.replaceFlashcard(flashcard, flashcardId);
     }
 
-    @GetMapping("/topic/{topic}")
-    public List<Flashcard> getAllFlashcardsByTopic(@PathVariable String topic){
-        return flashcardService.getAllFlashcardsByTopic(Topic.valueOf(topic.toUpperCase()));
-    }
-
-    @GetMapping("/topic")
-    public Topic[] getAllFlashcardTopics(){
-        return Topic.values();
-    }
-
-    @PatchMapping
-    public Flashcard updateFlashcard(@RequestBody Flashcard flashcard){
-        return flashcardService.updateFlashcard(flashcard);
+    @PatchMapping("/{flashcardId}")
+    public Flashcard updateFlashcard(@RequestBody Flashcard flashcard, @PathVariable Integer flashcardId){
+        return flashcardService.updateFlashcard(flashcard, flashcardId);
     }
 
     @DeleteMapping("/{flashcardId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteFlashcardById(@PathVariable Integer flashcardId){
         flashcardService.deleteFlashcardById(flashcardId);
+    }
+
+    @GetMapping("/topics")
+    public Flashcard.Topic[] getAllFlashcardTopics(){
+        return Flashcard.Topic.values();
+    }
+
+    @GetMapping("/difficulties")
+    public Flashcard.Difficulty[] getAllFlashcardDifficulties(){
+        return Flashcard.Difficulty.values();
+    }
+
+    @GetMapping("/sort")
+    public Flashcard.SortBy[] getAllFlashcardSortOptions(){
+        return Flashcard.SortBy.values();
     }
 }

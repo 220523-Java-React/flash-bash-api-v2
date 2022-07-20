@@ -1,20 +1,19 @@
 package com.revature.flashbash.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity(name = "flashcards")
 @Getter
 @Setter
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Flashcard {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer flashcardId;
 
     private String question;
@@ -23,11 +22,26 @@ public class Flashcard {
     @Enumerated
     private Topic topic;
 
+    @Enumerated
+    private Difficulty difficulty;
+
     // what relationship does User have with Flashcard? -> User (One) to Flashcard (Many)
     @ManyToOne
     private User creator;
 
     public enum Topic {
         JAVA, SQL, HTML, CSS, JAVASCRIPT, SPRING, DEVOPS
+    }
+
+    public enum Difficulty {
+        NOVICE, APPRENTICE, ADEPT, EXPERT, MASTER;
+    }
+
+    public enum SortBy{
+        ID,
+        QUESTION,
+        ANSWER,
+        TOPIC,
+        CREATOR;
     }
 }
