@@ -44,7 +44,6 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/users", "/authenticate").permitAll()
-                .antMatchers(HttpMethod.GET, "/flashcards").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
