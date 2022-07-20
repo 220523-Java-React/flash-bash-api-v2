@@ -20,12 +20,6 @@ public class UserController {
         this.userService = userService;
     }
 
-
-    @PostMapping() //                            -> POST /users
-    public User createUser(@RequestBody RegistrationRequest registrationRequest){
-        return userService.createUser(registrationRequest);
-    }
-
     @GetMapping // this already inherits /users -> GET /users
     public List<User> getAllUsers(){
         return userService.getAllUsers();
@@ -36,14 +30,20 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
-    @GetMapping("/username/{username}")
-    public User getUserByUsername(@PathVariable String username){
-        return userService.getUserByUsername(username);
+    @PostMapping() //                            -> POST /users
+    public User createUser(@RequestBody RegistrationRequest registrationRequest){
+        return userService.createUser(registrationRequest);
     }
 
-    @PatchMapping
-    public User updateUser(@RequestBody User user){
-        return userService.updateUser(user);
+
+    @PutMapping("/{userId}")
+    public User replaceUser(@RequestBody User user, @PathVariable Integer userId){
+        return userService.replaceUser(user, userId);
+    }
+
+    @PatchMapping("/{userId}")
+    public User updateUser(@RequestBody User user, @PathVariable Integer userId){
+        return userService.updateUser(user, userId);
     }
 
     @DeleteMapping("/{userId}")
@@ -51,7 +51,6 @@ public class UserController {
     public void deleteUserById(@PathVariable Integer userId){
         userService.deleteUserById(userId);
     }
-
 
 }
 

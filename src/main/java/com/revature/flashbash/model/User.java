@@ -22,7 +22,7 @@ import java.util.Collections;
 public class User implements UserDetails { // the default entity name would have been user
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
     @Column(unique = true, nullable = false)
