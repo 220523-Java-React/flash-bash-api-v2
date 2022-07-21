@@ -90,7 +90,7 @@ public class FlashcardService extends PaginationService<Flashcard.SortBy>{
 
     public Flashcard updateFlashcard(Flashcard flashcard, Integer flashcardId){
         Flashcard dbFlashcard = flashcardRepository.findById(flashcardId)
-                .orElseThrow(() -> new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcard.getFlashcardId()));
+                .orElseThrow(() -> new ResourceNotFoundException(Flashcard.class, "flashcardId", flashcardId));
 
         if(flashcard.getQuestion() != null)
             dbFlashcard.setQuestion(flashcard.getQuestion());

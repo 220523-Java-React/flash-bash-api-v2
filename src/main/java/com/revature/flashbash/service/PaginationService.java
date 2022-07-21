@@ -8,8 +8,6 @@ import org.springframework.data.domain.Sort;
 public abstract class PaginationService<S>{
 
     Integer validateSize(int size){
-        if(size != 5 && size != 10 && size != 25 && size != 50 && size != 100)
-            return 25;
         return size;
     }
 
