@@ -4,7 +4,7 @@ pipeline{
     stages{
         stage('Build Image'){
             steps{
-                sh 'docker build -t bpinkerton/flash-bash-api:latest'   
+                sh 'docker build -t bpinkerton/flash-bash-api:latest .'   
             }
         }
     }
