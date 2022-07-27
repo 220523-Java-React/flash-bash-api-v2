@@ -1,14 +1,11 @@
-pipeline{
-    agent any
-    def image
-    stages{
-        stage('Test'){
-            steps{
-                echo 'Executing pipeline'
-            }
-        }
-        stage('Build Image'){
-            image = docker.build("bpinkerton/flash-bash-api", "-p 8080:8080")
-        }
+node {
+    def app
+    
+    stage('Cloen Repo'){
+        checkout scm
+    }
+    
+    stage('Build Image){
+        app = docker.build("bpinkerton/flash-bash-api")      
     }
 }
