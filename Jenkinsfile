@@ -1,5 +1,6 @@
 pipeline{
     agent any
+    def image
     stages{
         stage('Test'){
             steps{
