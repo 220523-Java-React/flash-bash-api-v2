@@ -7,9 +7,7 @@ pipeline{
             }
         }
         stage('Build Image'){
-            steps {
-                image = docker.build("bpinkerton/flash-bash-api", "-p 8080:8080")
-            }
+            image = docker.build("bpinkerton/flash-bash-api", "-p 8080:8080")
         }
     }
 }
