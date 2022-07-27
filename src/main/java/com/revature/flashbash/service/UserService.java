@@ -124,8 +124,9 @@ public class UserService implements UserDetailsService {
         }
 
         updateUser(request.getUsername());
+        User user = (User) loadUserByUsername(request.getUsername());
 
-        return new AuthenticationResponse(jwtUtil.generateToken((User) loadUserByUsername(request.getUsername())), request.getUsername());
+        return new AuthenticationResponse(jwtUtil.generateToken(user), request.getUsername(), user.getUserId());
     }
 
     @Override
