@@ -1,6 +1,11 @@
-node {
-    checkout scm
+pipeline{
+    agent any
     
-    def customImage = docker.build("bpinkerton/flash-bash-api")
-    customImage.push()
+    stages{
+        stage('Build Image'){
+            steps{
+                echo 'docker build -t bpinkerton/flash-bash-api:latest'   
+            }
+        }
+    }
 }
