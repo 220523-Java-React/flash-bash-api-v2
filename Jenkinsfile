@@ -1,11 +1,21 @@
-node {
-    def app
-    
-    stage('Cloen Repo'){
-        checkout scm
+pipeline {
+    environment {
+        imageName = "bpinkerton/flash-bash-api"
+        dockerImage = ""
     }
-    
-    stage('Build Image'){
-        app = docker.build("bpinkerton/flash-bash-api")      
+    agent any
+    stages {
+        stage('Cloning Git'){
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build Image'){
+            steps {
+                script{
+                    dockerImage = docker.build imageName   
+                }
+            }
+        }
     }
 }
