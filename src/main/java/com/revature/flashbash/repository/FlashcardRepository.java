@@ -12,14 +12,13 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Integer> {
     Page<Flashcard> findAllByCreator_UserId(Integer userId, Pageable pageable);
     Page<Flashcard> findAllByCreator_Username(String username, Pageable pageable);
     Page<Flashcard> findAllByTopic(Flashcard.Topic topic, Pageable pageable);
-    Page<Flashcard> findAllByDifficultyLessThanEqual(Flashcard.Difficulty difficulty, Pageable pageable);
-
-    Page<Flashcard> findAllByDifficultyLessThanEqualAndTopic(Flashcard.Difficulty difficulty, Flashcard.Topic topic, Pageable pageable);
+    Page<Flashcard> findAllByDifficultyBetween(Flashcard.Difficulty low, Flashcard.Difficulty high, Pageable pageable);
+    Page<Flashcard> findAllByDifficultyBetweenAndTopic(Flashcard.Difficulty low, Flashcard.Difficulty high, Flashcard.Topic topic, Pageable pageable);
 
     Page<Flashcard> findAllByCreator_UserIdAndTopic(Integer userId, Flashcard.Topic topic, Pageable pageable);
-    Page<Flashcard> findAllByCreator_UserIdAndDifficultyLessThanEqual(Integer userId, Flashcard.Difficulty difficulty, Pageable pageable);
-    Page<Flashcard> findAllByCreator_UserIdAndDifficultyLessThanEqualAndTopic(
-            Integer userId, Flashcard.Difficulty difficulty, Flashcard.Topic topic, Pageable pageable);
+    Page<Flashcard> findAllByCreator_UserIdAndDifficultyBetween(Integer userId, Flashcard.Difficulty low, Flashcard.Difficulty high, Pageable pageable);
+    Page<Flashcard> findAllByCreator_UserIdAndDifficultyBetweenAndTopic(
+            Integer userId, Flashcard.Difficulty low, Flashcard.Difficulty high, Flashcard.Topic topic, Pageable pageable);
 
     Long deleteByFlashcardId(Integer flashcardId);
 }

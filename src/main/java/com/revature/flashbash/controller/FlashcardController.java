@@ -31,7 +31,7 @@ public class FlashcardController {
             @RequestParam(defaultValue = "ASCENDING") Order order,
             @RequestParam(required = false) Integer creator,
             @RequestParam(required = false) Flashcard.Topic topic,
-            @RequestParam(required = false) Flashcard.Difficulty difficulty
+            @RequestParam(required = false) Flashcard.Difficulty[] difficulty
             ) {
 
         return flashcardService.getAllFlashcards(

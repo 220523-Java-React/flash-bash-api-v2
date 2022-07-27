@@ -7,12 +7,22 @@ import com.revature.flashbash.model.User;
 import com.revature.flashbash.repository.FlashcardRepository;
 import com.revature.flashbash.util.PaginationOptions;
 import com.revature.flashbash.util.SearchCriteria;
+import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+
 @Service
 public class FlashcardService extends PaginationService<Flashcard.SortBy>{
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final FlashcardRepository flashcardRepository;
 
@@ -21,8 +31,14 @@ public class FlashcardService extends PaginationService<Flashcard.SortBy>{
     }
 
     public Page<Flashcard> getAllFlashcards(PaginationOptions paginationOptions, SearchCriteria searchCriteria){
-
         PageRequest pageRequest = buildPageRequest(paginationOptions);
+
+        CriteriaQuery<Flashcard> cr = entityManager.unwrap(Session.class)
+                .getCriteriaBuilder().createQuery(Flashcard.class);
+        Root<Flashcard> root = cr.from(Flashcard.class);
+        cr.select(root);
+
+
 
         int creator = searchCriteria.get(User.class) != null ? 1 : 0;
         int topic = searchCriteria.get(Flashcard.Topic.class) != null  ? 1 : 0;
@@ -34,23 +50,29 @@ public class FlashcardService extends PaginationService<Flashcard.SortBy>{
             case "000":
                 return flashcardRepository.findAll(pageRequest);
             case "001":
-                return flashcardRepository.findAllByDifficultyLessThanEqual(
-                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class), pageRequest);
+                return flashcardRepository.findAllByDifficultyBetween(
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[0],
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[1],
+                        pageRequest
+                );
             case "010":
                 return flashcardRepository.findAllByTopic(
                         (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class), pageRequest);
             case "011":
-                return flashcardRepository.findAllByDifficultyLessThanEqualAndTopic(
-                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class),
+
+                return flashcardRepository.findAllByDifficultyBetweenAndTopic(
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[0],
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[1],
                         (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class),
                         pageRequest);
             case "100":
                 return flashcardRepository.findAllByCreator_UserId(
                         (Integer) searchCriteria.get(User.class), pageRequest);
             case "101":
-                return flashcardRepository.findAllByCreator_UserIdAndDifficultyLessThanEqual(
+                return flashcardRepository.findAllByCreator_UserIdAndDifficultyBetween(
                         (Integer) searchCriteria.get(User.class),
-                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class),
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[0],
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[1],
                         pageRequest);
             case "110":
                 return flashcardRepository.findAllByCreator_UserIdAndTopic(
@@ -58,9 +80,10 @@ public class FlashcardService extends PaginationService<Flashcard.SortBy>{
                         (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class),
                         pageRequest);
             case "111":
-                return flashcardRepository.findAllByCreator_UserIdAndDifficultyLessThanEqualAndTopic(
+                return flashcardRepository.findAllByCreator_UserIdAndDifficultyBetweenAndTopic(
                         (Integer) searchCriteria.get(User.class),
-                        (Flashcard.Difficulty) searchCriteria.get(Flashcard.Difficulty.class),
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[0],
+                        ((Flashcard.Difficulty[]) searchCriteria.get(Flashcard.Difficulty.class))[1],
                         (Flashcard.Topic) searchCriteria.get(Flashcard.Topic.class),
                         pageRequest);
             default:
